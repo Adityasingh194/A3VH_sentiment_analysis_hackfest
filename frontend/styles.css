@@ -1,0 +1,155 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: #333;
+    color: white;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    position: fixed;
+    height: 100%;
+}
+
+.sidebar h2 {
+    text-align: center;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 10px;
+    background: #444;
+    border-radius: 5px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background: #555;
+}
+
+/* Welcome Page */
+.welcome {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    margin-left: 260px;
+    animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* User Page & Admin Page Backgrounds */
+.user-bg {
+    background: url('user-bg.jpg') no-repeat center center/cover;
+}
+
+.admin-bg {
+    background: url('admin-bg.jpg') no-repeat center center/cover;
+}
+
+/* Containers */
+.review-container, .admin-container, .login-container {
+    flex-grow: 1;
+    max-width: 600px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    margin-left: 280px;
+    animation: slideUp 1s ease-in-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Forms */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 10px 0 5px;
+}
+
+input, textarea {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    background: #ff7e5f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #feb47b;
+}
+
+/* Admin Login Page */
+.login-container {
+    max-width: 400px;
+    margin: auto;
+    margin-top: 100px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-align: center;
+    animation: slideUp 1s ease-in-out;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
