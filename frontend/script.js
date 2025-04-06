@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Website loaded successfully!");
 
-    const adminUsername = "admin";
-    const adminPassword = "1234";
+    const adminUsername = "admin";  // Change as needed
+    const adminPassword = "1234";   // Change as needed
 
     const loginForm = document.getElementById("adminLoginForm");
     const errorMessage = document.getElementById("errorMessage");
@@ -10,9 +10,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const reviewForm = document.getElementById("reviewForm");
     const reviewList = document.getElementById("reviewList");
 
-    const BACKEND_URL = "https://backend-dzfe.onrender.com";
+    const adminBtn = document.getElementById("adminBtn");
+    const userBtn = document.getElementById("userBtn");
 
-    // Handle Admin Login
+    // Welcome page navigation
+    if (adminBtn) {
+        adminBtn.addEventListener("click", () => {
+            window.location.href = "admin-login.html";
+        });
+    }
+
+    if (userBtn) {
+        userBtn.addEventListener("click", () => {
+            window.location.href = "user.html";
+        });
+    }
+
+    // Admin Login
     if (loginForm) {
         loginForm.addEventListener("submit", function (event) {
             event.preventDefault();
@@ -29,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Restrict access to admin.html
+    // Admin page access restriction
     if (window.location.pathname.includes("admin.html")) {
         const isAdmin = localStorage.getItem("isAdmin");
         if (isAdmin !== "true") {
@@ -40,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Handle Admin Logout
+    // Admin logout
     if (logoutBtn) {
         logoutBtn.addEventListener("click", function () {
             localStorage.removeItem("isAdmin");
@@ -48,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Handle Review Submission
+    // Review submission from user.html
     if (reviewForm) {
         reviewForm.addEventListener("submit", function (event) {
             event.preventDefault();
@@ -56,14 +70,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const name = document.getElementById("name").value;
             const eventName = document.getElementById("event").value;
             const reviewText = document.getElementById("review").value;
+
             const review = {
-                name: name,
+                name,
                 event: eventName,
-                reviewText: reviewText
+                reviewText,
+                date: new Date().toISOString()
             };
 
-            // Send review to backend
-            fetch(`${BACKEND_URL}/submit-review`, {
+            fetch("https://backend-dzfe.onrender.com/submit-review", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -77,27 +92,26 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("Failed to submit review. Try again later.");
+                alert("Something went wrong. Please try again later.");
             });
         });
     }
 
-    // Fetch and display reviews in admin panel
+    // Fetch and display reviews on admin.html
     function fetchReviews() {
-        fetch(`${BACKEND_URL}/get-reviews`)
+        fetch("https://backend-dzfe.onrender.com/get-reviews")
             .then(response => response.json())
             .then(data => {
                 reviewList.innerHTML = "";
                 data.forEach(review => {
                     const li = document.createElement("li");
-                    li.textContent = `${review.date} - ${review.name} reviewed ${review.event}: "${review.reviewText}"`;
+                    li.textContent = `${new Date(review.date).toLocaleString()} - ${review.name} reviewed "${review.event}": "${review.reviewText}"`;
                     reviewList.appendChild(li);
                 });
             })
             .catch(error => {
                 console.error("Error fetching reviews:", error);
-                reviewList.innerHTML = "<li>Failed to load reviews.</li>";
+                reviewList.innerHTML = "<li>Failed to load reviews</li>";
             });
     }
 });
-
