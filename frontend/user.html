@@ -4,31 +4,772 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Review</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Base styling with dark theme */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #111827;
+            --darker: #030712;
+            --light: #f9fafb;
+            --card-bg: #1f2937;
+            --input-bg: #374151;
+            --text-primary: #f3f4f6;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --border: #4b5563;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+            --glow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--darker);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            position: relative;
+            color: var(--text-primary);
+        }
+        
+        /* Background animations */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("/api/placeholder/1920/1080") center/cover;
+            opacity: 0.05;
+            animation: slowZoom 30s infinite alternate;
+        }
+        
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* Star effect */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            width: 280px;
+            background: var(--dark);
+            color: var(--light);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("/api/placeholder/500/800") center/cover;
+            opacity: 0.05;
+            z-index: -1;
+        }
+        
+        .sidebar h2 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            font-size: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0% { opacity: 0.6; box-shadow: 0 0 5px var(--primary); }
+            50% { opacity: 1; box-shadow: 0 0 15px var(--primary); }
+            100% { opacity: 0.6; box-shadow: 0 0 5px var(--primary); }
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            margin-top: 2rem;
+        }
+        
+        .sidebar ul li {
+            margin-bottom: 1.2rem;
+            transform: translateX(-20px);
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+        
+        .sidebar ul li:nth-child(1) { animation-delay: 0.2s; }
+        .sidebar ul li:nth-child(2) { animation-delay: 0.4s; }
+        
+        @keyframes slideIn {
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .sidebar ul li a {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            padding: 0.9rem 1.2rem;
+            border-radius: 0.8rem;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .sidebar ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+        
+        .sidebar ul li a:hover::before {
+            left: 0;
+        }
+        
+        .sidebar ul li a:hover {
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            opacity: 0;
+            animation: fadeIn 1s forwards 1s;
+        }
+        
+        /* Welcome section */
+        .welcome-banner {
+            position: relative;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.2) 100%);
+            color: var(--text-primary);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: slideDown 1s forwards 0.5s;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        @keyframes slideDown {
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .welcome-banner h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            display: inline-block;
+            color: var(--text-primary);
+        }
+        
+        .welcome-banner h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            animation: lineExpand 2s forwards 1.5s;
+        }
+        
+        @keyframes lineExpand {
+            to { width: 100%; }
+        }
+        
+        .welcome-banner p {
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeUp 1s forwards 1s;
+            color: var(--text-secondary);
+        }
+        
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: rotate(45deg);
+            animation: shine 6s infinite;
+        }
+        
+        @keyframes shine {
+            0% { top: -50%; left: -50%; }
+            100% { top: 150%; left: 150%; }
+        }
+        
+        /* Main content styling */
+        .main-content {
+            flex: 1;
+            padding: 3rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .review-container {
+            position: relative;
+        }
+        
+        .review-container h1 {
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2.8rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientMove 5s linear infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        .review-container h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+            border-radius: 3px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; transform: scaleX(0.95); }
+            50% { opacity: 1; transform: scaleX(1.05); }
+            100% { opacity: 0.7; transform: scaleX(0.95); }
+        }
+        
+        /* Form styling with dark theme */
+        #reviewForm {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        #reviewForm::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+            background-size: 200% auto;
+            animation: gradientMove 5s linear infinite;
+        }
+        
+        #reviewForm:hover {
+            transform: translateY(-8px) rotateX(3deg);
+            box-shadow: var(--glow), var(--shadow);
+        }
+        
+        #reviewForm label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 0.5rem;
+        }
+        
+        #reviewForm label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 70%;
+            background: var(--primary);
+            border-radius: 3px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        #reviewForm label.active::before {
+            opacity: 1;
+        }
+        
+        #reviewForm .input-group {
+            position: relative;
+            margin-bottom: 1.8rem;
+        }
+        
+        #reviewForm input,
+        #reviewForm textarea {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 0.7rem;
+            background: var(--input-bg);
+            transition: all 0.3s ease;
+            outline: none;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        
+        #reviewForm input:focus,
+        #reviewForm textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        
+        #reviewForm .input-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+        
+        #reviewForm input:focus ~ .input-animation,
+        #reviewForm textarea:focus ~ .input-animation {
+            width: 100%;
+        }
+        
+        #reviewForm button {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.7rem;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 2rem auto 0;
+            position: relative;
+            overflow: hidden;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+        
+        #reviewForm button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        #reviewForm button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.4);
+        }
+        
+        #reviewForm button:hover::before {
+            left: 100%;
+        }
+        
+        #reviewForm button::after {
+            content: '→';
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        #reviewForm button:hover::after {
+            opacity: 1;
+        }
+        
+        /* Neon glow effects */
+        .neon-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 1.5rem 1rem;
+            }
+            
+            .main-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .welcome-banner {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .review-container h1 {
+                font-size: 2.2rem;
+            }
+            
+            #reviewForm {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
-<body class="user-bg">
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Star Background -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Particles Container -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Neon glow effects -->
+    <div class="neon-glow" style="width: 300px; height: 300px; background: rgba(99, 102, 241, 0.3); top: 10%; left: 50%;"></div>
+    <div class="neon-glow" style="width: 200px; height: 200px; background: rgba(16, 185, 129, 0.3); bottom: 20%; right: 10%;"></div>
+    <div class="neon-glow" style="width: 250px; height: 250px; background: rgba(245, 158, 11, 0.2); top: 50%; right: 30%;"></div>
+    
+    <!-- Sidebar -->
     <div class="sidebar">
         <h2>Menu</h2>
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="admin-login.html">Admin Page</a></li>
         </ul>
+        <div class="sidebar-footer">
+            Share your experience with us!
+        </div>
     </div>
-    <div class="review-container">
-        <h1>Submit Your Review</h1>
-        <form id="reviewForm">
-            <label for="name">Your Name:</label>
-            <input type="text" id="name" required>
-
-            <label for="event">Event Name:</label>
-            <input type="text" id="event" required>
-
-            <label for="review">Your Review:</label>
-            <textarea id="review" rows="4" required></textarea>
-
-            <button type="submit">Submit Review</button>
-        </form>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <h2>Welcome to Our Feedback Portal</h2>
+            <p>Your opinions matter to us! We value your feedback as it helps us improve our events and services. Please take a moment to share your experience with us.</p>
+            <p>Thank you for being part of our community!</p>
+        </div>
+        
+        <!-- Review Container -->
+        <div class="review-container">
+            <h1>Submit Your Review</h1>
+            <form id="reviewForm">
+                <div class="input-group">
+                    <label for="name" id="nameLabel">Your Name:</label>
+                    <input type="text" id="name" required>
+                    <div class="input-animation"></div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="event" id="eventLabel">Event Name:</label>
+                    <input type="text" id="event" required>
+                    <div class="input-animation"></div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="review" id="reviewLabel">Your Review:</label>
+                    <textarea id="review" rows="4" required></textarea>
+                    <div class="input-animation"></div>
+                </div>
+                
+                <button type="submit">Submit Review</button>
+            </form>
+        </div>
     </div>
+
+    <script>
+        // Create starry background
+        document.addEventListener('DOMContentLoaded', function() {
+            const starsContainer = document.getElementById('stars');
+            
+            // Create stars
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random properties
+                const size = Math.random() * 2 + 1;
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const delay = Math.random() * 5;
+                const duration = Math.random() * 3 + 2;
+                
+                // Apply styles
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${left}%`;
+                star.style.top = `${top}%`;
+                star.style.animationDuration = `${duration}s`;
+                star.style.animationDelay = `${delay}s`;
+                
+                starsContainer.appendChild(star);
+            }
+            
+            // Animated Particles
+            const particlesContainer = document.getElementById('particles');
+            const colors = ['#6366f1', '#10b981', '#f59e0b', '#d1d5db'];
+            
+            // Create particles
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 5 + 2;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const animDuration = Math.random() * 15 + 10;
+                const delay = Math.random() * 5;
+                
+                // Apply styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = color;
+                particle.style.left = `${left}%`;
+                particle.style.top = `${top}%`;
+                particle.style.opacity = `${Math.random() * 0.2}`;
+                
+                // Apply animation
+                particle.style.animation = `float ${animDuration}s ease-in-out infinite alternate ${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Add float animation keyframes
+            const floatKeyframes = `
+                @keyframes float {
+                    0% { transform: translate(0, 0) rotate(0deg); }
+                    50% { transform: translate(${Math.random() * 30}px, ${Math.random() * -30}px) rotate(${Math.random() * 20}deg); }
+                    100% { transform: translate(${Math.random() * -30}px, ${Math.random() * 30}px) rotate(${Math.random() * -20}deg); }
+                }
+            `;
+            
+            const style = document.createElement('style');
+            style.innerHTML = floatKeyframes;
+            document.head.appendChild(style);
+            
+            // Form animations and interactions
+            const inputs = document.querySelectorAll('input, textarea');
+            const labels = document.querySelectorAll('label');
+            
+            inputs.forEach(input => {
+                // Focus animations
+                input.addEventListener('focus', function() {
+                    const label = document.getElementById(this.id + 'Label');
+                    label.classList.add('active');
+                });
+                
+                input.addEventListener('blur', function() {
+                    const label = document.getElementById(this.id + 'Label');
+                    if (!this.value) {
+                        label.classList.remove('active');
+                    }
+                });
+                
+                // Typing animation
+                input.addEventListener('input', function() {
+                    if (this.value) {
+                        const label = document.getElementById(this.id + 'Label');
+                        label.classList.add('active');
+                    }
+                });
+            });
+            
+            // Form submission animation
+            const form = document.getElementById('reviewForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate form
+                const name = document.getElementById('name').value;
+                const event = document.getElementById('event').value;
+                const review = document.getElementById('review').value;
+                
+                if (name && event && review) {
+                    // Success animation
+                    form.style.transform = 'scale(0.95)';
+                    form.style.opacity = '0.8';
+                    
+                    setTimeout(() => {
+                        form.innerHTML = `
+                            <div style="text-align: center; animation: fadeIn 1s ease;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <h2 style="color: #10b981; margin: 1.5rem 0; font-size: 2.2rem;">Thank You!</h2>
+                                <p style="color: #d1d5db; margin-bottom: 2rem; font-size: 1.1rem;">Your review has been submitted successfully.</p>
+                                <div style="position: relative; overflow: hidden; border-radius: 0.7rem; margin: 2rem auto; width: 200px; height: 200px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">
+                                    <img src="/api/placeholder/400/400" alt="Thank you" style="width: 100%; height: 100%; object-fit: cover; animation: pulse 2s infinite alternate;">
+                                </div>
+                                <button type="button" onclick="window.location.reload()" style="background: linear-gradient(90deg, #10b981, #059669); color: white; border: none; padding: 1rem 2rem; border-radius: 0.7rem; cursor: pointer; font-size: 1.1rem; position: relative; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);">Submit Another Review</button>
+                            </div>
+                        `;
+                        form.style.transform = 'scale(1)';
+                        form.style.opacity = '1';
+                    }, 500);
+                }
+            });
+            
+            // Animate welcome text letters
+            const welcomeTitle = document.querySelector('.welcome-banner h2');
+            const welcomeText = welcomeTitle.textContent;
+            welcomeTitle.innerHTML = '';
+            
+            // Wrap each letter in a span
+            for (let i = 0; i < welcomeText.length; i++) {
+                const letter = document.createElement('span');
+                letter.textContent = welcomeText[i];
+                letter.style.display = 'inline-block';
+                letter.style.opacity = '0';
+                letter.style.transform = 'translateY(20px)';
+                letter.style.animation = `fadeUp 0.5s forwards ${0.1 + i * 0.04}s`;
+                welcomeTitle.appendChild(letter);
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
